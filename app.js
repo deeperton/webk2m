@@ -31,6 +31,7 @@ const renameFile = util.promisify(fs.rename);
 const copyFile = util.promisify(fs.copyFile);
 const unlinkFile = util.promisify(fs.unlink);
 const readDir = util.promisify(fs.readdir);
+const writeFile = util.promisify(fs.writeFile);
 
 // for the first run -- prepare working folders
 fs.mkdir(FILES_SANDBOX, 0o755, (err) => {
@@ -63,30 +64,48 @@ app.use(express.static(FILES_MOBI, {
 // basic routes
 app.get('/', async (req, res) => {
   let files = await readDir(FILES_MOBI);
-  files = files.filter((f) => path.extname(f) === '.mobi');
-  res.render('index', {
-    folder: FILES_MOBI,
-    files: files
-  });
+  files = files.filter((f) => ['.mobi', '.err'].indexOf(path.extname(f)) > -1);
+  res.render('index', { files: files });
 });
 
 app.post('/upload', upload.single('file'), async (req, res) => {
   if (req.file) {
-    const ext = path.extname(req.file.originalname)
+    const originalExt = path.extname(req.file.originalname)
     await renameFile(req.file.path, req.file.path + path.extname(req.file.originalname));
-    await (new Promise((resolve, reject) => {
-      execFile(AMZ_CONVERTOR, [req.file.filename + ext], {
-        cwd: FILES_SANDBOX
-      }, (err, stdout, stderr) => {
-        console.log(stdout, stderr);
-        if (err) throw err;
-        resolve(stdout);
-      });
-    }));
-    let newFileName = req.file.originalname.replace(path.extname(req.file.originalname), '.mobi');
-    await copyFile(req.file.path + '.mobi', FILES_MOBI + '/' + newFileName);
-    await unlinkFile(req.file.path + ext);
-    await unlinkFile(req.file.path + '.mobi');
+    try {
+      let results = await (new Promise((resolve, reject) => {
+        execFile(AMZ_CONVERTOR, [req.file.filename + originalExt], {
+          cwd: FILES_SANDBOX
+        }, (err, stdout, stderr) => {
+          let result = {
+            result: true
+          }
+          console.log(stdout, stderr);
+          if (err) {
+            result.result = false;
+            result = {...result, stdout: stdout, stderr: stderr};
+          }
+          resolve(result);
+        });
+      }));
+
+      let fileName = req.file.path + '.mobi';
+      let newFileName = FILES_MOBI + '/' + req.file.originalname.replace(path.extname(req.file.originalname), '.mobi');
+      if (results.result === false) {
+        if (!fs.existsSync(fileName)) {
+          // if there was an error in kindlegen, we have to say something
+          // for example into file
+          await writeFile(req.file.path + '.mobi.err', results.stdout + '\n\n' + results.stderr);
+          fileName += '.err';
+          newFileName += '.err';
+        }
+      }
+      await copyFile(fileName, newFileName);
+      await unlinkFile(req.file.path + originalExt);
+      await unlinkFile(fileName);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   res.redirect('/');

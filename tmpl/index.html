@@ -6,8 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <style>
-    .last {
+    .err {
       font-weight: bold;
+    }
+    .err a {
+      color: red;
     }
   </style>
 </head>
@@ -27,7 +30,7 @@
       <br />
       <ul>
         {% for item in files %}
-        <li{% if lastfile == item %} class="last"{% endif %}>
+        <li{% if item.endsWith('.err') %} class="err"{% endif %}>
           <a href="/{{ item }}">{{ item }}</a>
         </li>
         {% endfor %}
