@@ -1,3 +1,4 @@
 .idea
 node_modules
 exe/kindlegen*
+ssl_cert/*.pem

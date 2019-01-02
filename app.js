@@ -9,7 +9,20 @@ const os = require('os');
 
 const execFile = require('child_process').execFile;
 
+var http = require('http');
+var https = require('https');
+var privateKey  = fs.readFileSync('ssl_cert/client-key.pem', 'utf8');
+var certificate = fs.readFileSync('ssl_cert/client-cert.pem', 'utf8');
+
+var credentials = {key: privateKey, cert: certificate, passphrase: '1234'};
+
 const app = express();
+
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+
+httpServer.listen(4500);
+httpsServer.listen(8443);
 
 const PORT = process.argv[2] || 4500;
 
@@ -119,4 +132,4 @@ app.get('/clear', async (req, res) => {
   res.redirect('/');
 });
 
-app.listen(PORT);
+// app.listen(PORT);
