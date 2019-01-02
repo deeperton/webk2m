@@ -92,10 +92,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   res.redirect('/');
 });
 
-app.get('./clear', async (req, res) => {
+app.get('/clear', async (req, res) => {
   let files = await readDir(FILES_MOBI);
   files.forEach((file) => {
-    await unlinkFile(FILES_MOBI + '/' + file);
+    unlinkFile(FILES_MOBI + '/' + file);
   })
   res.redirect('/');
 });

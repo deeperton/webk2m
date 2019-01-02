@@ -15,13 +15,15 @@
 
   <div class="content">
     <form action="/upload" method="post" enctype="multipart/form-data">
+      <p>This is just a web-bridge for converting files to mobi format at home.</p>
+      <p>No commercial use allowed.</p>
       <p>Kindlegen supports only .opf/.htm/.html/.epub/.xhtml/.zip/directory source files</p>
       <label for="file">Epub file: </label>
       <input type="file" name="file" id="file">
       <button type="submit">Upload</button>
     </form>
     <div class="files">
-      <p>Actions: <a href="/clear">Clear list</a></p>
+      <p>Actions: <a href="/clear">Remove All</a></p>
       <br />
       <ul>
         {% for item in files %}
