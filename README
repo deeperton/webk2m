@@ -1,0 +1,13 @@
+# simplification of converting files to mobi format
+
+This repo does not contains convertor it self.
+
+You can find it on official page, where you have to agree with their terms of use
+
+https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211
+
+This app is only a primitive bridge for it.
+
+To use it, you have to download kindlegen app and put executable file into `exe` folder.
+
+app.js accepts only one optional argument - port (default: 4500)

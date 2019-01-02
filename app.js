@@ -5,18 +5,24 @@ const util = require('util');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const os = require('os');
 
 const execFile = require('child_process').execFile;
 
 const app = express();
 
-const SANDBOX = process.argv[2] || '/data1/temp';
-const PORT = process.argv[3] || 4500;
+const PORT = process.argv[2] || 4500;
 
+const tmpDir=os.tmpdir();
+const sep = path.sep;
+
+const SANDBOX = fs.mkdtempSync(`${tmpDir}${sep}`);
 const FILES_SANDBOX = path.normalize(path.normalize(SANDBOX) + '/books');
 const FILES_MOBI = FILES_SANDBOX + '/mobi';
 
-const AMZ_CONVERTOR = path.resolve(path.dirname(module.filename), './exe/kindlegen');
+const genExt = os.platform() === 'win32' ? '.exe' : '';
+
+const AMZ_CONVERTOR = path.resolve(path.dirname(module.filename), './exe/kindlegen' + genExt);
 
 // tune multer to destination folder
 const upload = multer({ dest: FILES_SANDBOX });
