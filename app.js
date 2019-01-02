@@ -66,7 +66,7 @@ fs.mkdir(FILES_MOBI, 0o755, (err) => {
 app.engine('html', cons.swig);
 app.set('view engine', 'html');
 app.set('views', './tmpl');
-
+app.use(express.static('./public'));
 app.use(express.static(FILES_MOBI, {
   dotfiles: 'ignore',
   etag: false,

@@ -1,0 +1,15 @@
+{
+    "name": "Example Social",
+    "short_name": "Example Social",
+    "icons": [],
+    "share_target": {
+      "action": "/upload",
+      "method": "POST",
+      "enctype": "multipart/form-data",
+      "params": {
+        "title": "Upload to convert",
+        "description": "convert to mobi",
+        "url": "file"
+      }
+    }
+  }
